@@ -1,0 +1,13 @@
+#!/bin/sh
+
+export SYSTEMC_HOME=/home/tintin/SystemC_Tut/systemc-3.0.0
+export LD_LIBRARY_PATH="$SYSTEMC_HOME/lib-linux64"
+CPP="$@"
+SIM="sim"
+
+echo "g++ -I. -I$SYSTEMC_HOME/include -L. -L$LD_LIBRARY_PATH -o "$SIM" "$CPP" -lsystemc -lm"
+g++ -I. -I$SYSTEMC_HOME/include -L. -L$LD_LIBRARY_PATH -o "$SIM" "$CPP" -lsystemc -lm
+
+./$SIM
+
+
