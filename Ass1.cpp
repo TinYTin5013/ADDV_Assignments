@@ -14,20 +14,6 @@ const int SUB = 1;
 const int EQ = 2;
 const int REM = 3;
 
-// Top-level module to connect software and hardware modules
-SC_MODULE(Top) {
-    Software* software;
-    Hardware_System* hardware;
-
-    SC_CTOR(Top) {
-        software = new Software("software");
-        hardware = new Hardware_System("hardware");
-
-        // Bind sockets
-        software->initiator_socket.bind(hardware->target_socket);
-    }
-};
-
 // Hardware module (Target) - implements arithmetic operations
 SC_MODULE(Hardware_System) {
     tlm_utils::simple_target_socket<Hardware_System> target_socket;
@@ -88,7 +74,7 @@ int Hardware_System::subtraction(int x, int y) {
 }
 
 int Hardware_System::equality(int x, int y) {
-    wait(5, SC_NS); // Simulate delay
+    wait(4, SC_NS); // Simulate delay
     return (x == y) ? 1 : 0;
 }
 
@@ -121,7 +107,8 @@ SC_MODULE(Software) {
         send_command(SUB, 125, 25, delay);
         send_command(EQ, 47, 47, delay);
         send_command(ADD, 5, 6, delay);
-
+        
+        delay = sc_time_stamp();
         std::cout << "Total simulation time: " << delay << std::endl;
     }
 
@@ -151,13 +138,25 @@ SC_MODULE(Software) {
     }
 };
 
+
+// Top-level module to connect software and hardware modules
+SC_MODULE(Top) {
+    Software *software;
+    Hardware_System *hardware;
+
+    SC_CTOR(Top) {
+        software = new Software("software");
+        hardware = new Hardware_System("hardware");
+
+        // Bind sockets
+        software->initiator_socket.bind(hardware->target_socket);
+    }
+};
+
+
 // Main entry point for SystemC simulation
 int sc_main(int sc_argc, char* sc_argv[]) {
     Top top("top"); // Instantiate the top module
     sc_start(); // Start the simulation
     return 0;
 }
-
-Regards,
-Shivanshu Aggarwal,
-IIIT
